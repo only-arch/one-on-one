@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>간단 VS 판정기</title>
+<title>타이만 시작</title>
 <style>
   * {
     box-sizing: border-box;
@@ -270,6 +270,7 @@
 
   function hasFinalConsonant(word) {
     if (!word) return false;
+
     const lastChar = word[word.length - 1];
     const code = lastChar.charCodeAt(0);
 
@@ -296,14 +297,21 @@
 
   function getElementBonus(myElement, enemyElement) {
     if (myElement === enemyElement) return 5;
-    if (advantage[myElement] && advantage[myElement].includes(enemyElement)) return 18;
-    if (advantage[enemyElement] && advantage[enemyElement].includes(myElement)) return -18;
+
+    if (advantage[myElement] && advantage[myElement].includes(enemyElement)) {
+      return 18;
+    }
+
+    if (advantage[enemyElement] && advantage[enemyElement].includes(myElement)) {
+      return -18;
+    }
+
     return 0;
   }
 
-  function getElementReason(winnerElement, loserElement) {
+  function getElementReason(winnerElement, loserElement, winnerName) {
     if (winnerElement === loserElement) {
-      return `${elementName[winnerElement]} 속성이 서로 같아 속성 강화가 적용되었습니다.`;
+      return `${elementName[winnerElement]} 속성이 서로 같아 ${winnerName}의 힘이 안정적으로 발휘되었습니다.`;
     }
 
     if (advantage[winnerElement] && advantage[winnerElement].includes(loserElement)) {
@@ -311,37 +319,10 @@
     }
 
     if (advantage[loserElement] && advantage[loserElement].includes(winnerElement)) {
-      return `속성 상성은 불리했지만, 다른 조건과 랜덤 변수로 승리했습니다.`;
+      return `상성은 불리했지만, ${winnerName} 쪽이 다른 조건으로 승부를 뒤집었습니다.`;
     }
 
-    return `속성 차이는 크지 않았고, 키와 체중, 랜덤 변수가 승부를 갈랐습니다.`;
-  }
-
-  function getPhysicalReason(winnerName, loserName, winnerHeight, loserHeight, winnerWeight, loserWeight) {
-    const heightDiff = winnerHeight - loserHeight;
-    const weightDiff = winnerWeight - loserWeight;
-
-    if (heightDiff >= 8 && weightDiff >= 8) {
-      return `${winnerName} 쪽이 키와 체중에서 모두 우세했습니다.`;
-    }
-
-    if (heightDiff >= 8) {
-      return `${winnerName} 쪽이 키 차이로 리치를 잡았습니다.`;
-    }
-
-    if (weightDiff >= 8) {
-      return `${winnerName} 쪽이 체중 차이로 밀어붙였습니다.`;
-    }
-
-    if (heightDiff <= -8 && weightDiff <= -8) {
-      return `${loserName} 쪽이 피지컬은 우세했지만, 결과를 뒤집지는 못했습니다.`;
-    }
-
-    if (Math.abs(heightDiff) < 5 && Math.abs(weightDiff) < 5) {
-      return `피지컬 차이가 크지 않아 근소한 승부였습니다.`;
-    }
-
-    return `키와 체중 차이가 일부 반영되었습니다.`;
+    return `상성 차이는 크게 없었지만, ${winnerName} 쪽이 피지컬에서 우세했습니다.`;
   }
 
   function judgeBattle() {
@@ -376,29 +357,17 @@
     let loserName;
     let winnerElement;
     let loserElement;
-    let winnerHeight;
-    let loserHeight;
-    let winnerWeight;
-    let loserWeight;
 
     if (scoreA > scoreB) {
       winnerName = nameA;
       loserName = nameB;
       winnerElement = elementA;
       loserElement = elementB;
-      winnerHeight = heightA;
-      loserHeight = heightB;
-      winnerWeight = weightA;
-      loserWeight = weightB;
     } else if (scoreB > scoreA) {
       winnerName = nameB;
       loserName = nameA;
       winnerElement = elementB;
       loserElement = elementA;
-      winnerHeight = heightB;
-      loserHeight = heightA;
-      winnerWeight = weightB;
-      loserWeight = weightA;
     } else {
       const randomPick = Math.random() > 0.5;
 
@@ -406,20 +375,15 @@
       loserName = randomPick ? nameB : nameA;
       winnerElement = randomPick ? elementA : elementB;
       loserElement = randomPick ? elementB : elementA;
-      winnerHeight = randomPick ? heightA : heightB;
-      loserHeight = randomPick ? heightB : heightA;
-      winnerWeight = randomPick ? weightA : weightB;
-      loserWeight = randomPick ? weightB : weightA;
     }
 
     const particle = getSubjectParticle(winnerName);
-    const resultText = `${elementEmoji[winnerElement]} ${winnerName}${particle} 승리했다!`;
 
-    const reasonText =
-      `${getElementReason(winnerElement, loserElement)} ${getPhysicalReason(winnerName, loserName, winnerHeight, loserHeight, winnerWeight, loserWeight)}`;
+    document.getElementById("result").textContent =
+      `${elementEmoji[winnerElement]} ${winnerName}${particle} 승리했다!`;
 
-    document.getElementById("result").textContent = resultText;
-    document.getElementById("reason").textContent = reasonText;
+    document.getElementById("reason").textContent =
+      getElementReason(winnerElement, loserElement, winnerName);
   }
 </script>
 
