@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>간단 VS 판정기</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+    background: linear-gradient(135deg, #f7f3ff, #fff8ec);
+    color: #25212d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 980px;
+    background: rgba(255,255,255,0.86);
+    border: 2px solid rgba(90,70,120,0.12);
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(70,50,100,0.15);
+    padding: 28px;
+  }
+
+  h1 {
+    margin: 0 0 8px;
+    text-align: center;
+    font-size: 28px;
+  }
+
+  .desc {
+    text-align: center;
+    margin: 0 0 28px;
+    color: #777;
+    font-size: 14px;
+  }
+
+  .battle-area {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  }
+
+  .card h2 {
+    margin: 0 0 18px;
+    font-size: 20px;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin: 14px 0 7px;
+  }
+
+  input, select {
+    width: 100%;
+    height: 44px;
+    border: 1px solid #ddd;
+    border-radius: 14px;
+    padding: 0 13px;
+    font-size: 15px;
+    background: #fff;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: #9c7cf4;
+    box-shadow: 0 0 0 4px rgba(156,124,244,0.16);
+  }
+
+  .vs {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: #25212d;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: 900;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+  }
+
+  .btn {
+    margin: 28px auto 0;
+    display: block;
+    border: none;
+    border-radius: 999px;
+    padding: 15px 34px;
+    background: #25212d;
+    color: white;
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .result-box {
+    margin-top: 28px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #fff, #f7f1ff);
+    border: 1px dashed #cbbcff;
+    padding: 26px 20px;
+    text-align: center;
+    min-height: 120px;
+  }
+
+  .result {
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1.35;
+  }
+
+  .reason {
+    margin-top: 12px;
+    color: #6f657c;
+    font-size: 15px;
+    line-height: 1.6;
+    word-break: keep-all;
+  }
+
+  .small {
+    margin-top: 10px;
+    text-align: center;
+    color: #888;
+    font-size: 13px;
+  }
+
+  @media (max-width: 760px) {
+    body {
+      padding: 14px;
+      align-items: flex-start;
+    }
+
+    .wrap {
+      padding: 20px;
+      border-radius: 22px;
+    }
+
+    .battle-area {
+      grid-template-columns: 1fr;
+    }
+
+    .vs {
+      margin: 0 auto;
+    }
+
+    .result {
+      font-size: 24px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1>간단 VS 판정기</h1>
+  <p class="desc">이름, 키, 체중, 속성만 넣고 누가 이기는지 확인합니다.</p>
+
+  <div class="battle-area">
+    <div class="card">
+      <h2>이름1</h2>
+
+      <label>이름</label>
+      <input id="nameA" type="text" placeholder="캐릭터 이름">
+
+      <label>키</label>
+      <input id="heightA" type="number" placeholder="예: 178">
+
+      <label>체중</label>
+      <input id="weightA" type="number" placeholder="예: 68">
+
+      <label>속성</label>
+      <select id="elementA">
+        <option value="fire">🔥 불</option>
+        <option value="water">💧 물</option>
+        <option value="grass">🌿 풀</option>
+        <option value="ice">❄ 얼음</option>
+        <option value="electric">⚡ 번개</option>
+        <option value="wind">🌪 바람</option>
+      </select>
+    </div>
+
+    <div class="vs">VS</div>
+
+    <div class="card">
+      <h2>이름2</h2>
+
+      <label>이름</label>
+      <input id="nameB" type="text" placeholder="캐릭터 이름">
+
+      <label>키</label>
+      <input id="heightB" type="number" placeholder="예: 165">
+
+      <label>체중</label>
+      <input id="weightB" type="number" placeholder="예: 52">
+
+      <label>속성</label>
+      <select id="elementB">
+        <option value="fire">🔥 불</option>
+        <option value="water">💧 물</option>
+        <option value="grass">🌿 풀</option>
+        <option value="ice">❄ 얼음</option>
+        <option value="electric">⚡ 번개</option>
+        <option value="wind">🌪 바람</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="btn" onclick="judgeBattle()">승부 보기</button>
+
+  <div class="result-box">
+    <div id="result" class="result">결과가 여기에 표시됩니다</div>
+    <div id="reason" class="reason"></div>
+  </div>
+
+  <div class="small">※ 가볍게 보는 랜덤 판정기입니다.</div>
+</div>
+
+<script>
+  const elementEmoji = {
+    fire: "🔥",
+    water: "💧",
+    grass: "🌿",
+    ice: "❄",
+    electric: "⚡",
+    wind: "🌪"
+  };
+
+  const elementName = {
+    fire: "불",
+    water: "물",
+    grass: "풀",
+    ice: "얼음",
+    electric: "번개",
+    wind: "바람"
+  };
+
+  const advantage = {
+    fire: ["grass", "ice"],
+    water: ["fire"],
+    grass: ["water"],
+    ice: ["wind", "grass"],
+    electric: ["water"],
+    wind: ["fire", "electric"]
+  };
+
+  function hasFinalConsonant(word) {
+    if (!word) return false;
+    const lastChar = word[word.length - 1];
+    const code = lastChar.charCodeAt(0);
+
+    if (code < 0xAC00 || code > 0xD7A3) {
+      return false;
+    }
+
+    return (code - 0xAC00) % 28 !== 0;
+  }
+
+  function getSubjectParticle(name) {
+    return hasFinalConsonant(name) ? "이" : "가";
+  }
+
+  function getValue(id, fallback) {
+    const value = document.getElementById(id).value.trim();
+    return value || fallback;
+  }
+
+  function getNumber(id) {
+    const value = Number(document.getElementById(id).value);
+    return isNaN(value) ? 0 : value;
+  }
+
+  function getElementBonus(myElement, enemyElement) {
+    if (myElement === enemyElement) return 5;
+    if (advantage[myElement] && advantage[myElement].includes(enemyElement)) return 18;
+    if (advantage[enemyElement] && advantage[enemyElement].includes(myElement)) return -18;
+    return 0;
+  }
+
+  function getElementReason(winnerElement, loserElement) {
+    if (winnerElement === loserElement) {
+      return `${elementName[winnerElement]} 속성이 서로 같아 속성 강화가 적용되었습니다.`;
+    }
+
+    if (advantage[winnerElement] && advantage[winnerElement].includes(loserElement)) {
+      return `${elementName[winnerElement]} 속성이 ${elementName[loserElement]} 속성에 유리하게 작용했습니다.`;
+    }
+
+    if (advantage[loserElement] && advantage[loserElement].includes(winnerElement)) {
+      return `속성 상성은 불리했지만, 다른 조건과 랜덤 변수로 승리했습니다.`;
+    }
+
+    return `속성 차이는 크지 않았고, 키와 체중, 랜덤 변수가 승부를 갈랐습니다.`;
+  }
+
+  function getPhysicalReason(winnerName, loserName, winnerHeight, loserHeight, winnerWeight, loserWeight) {
+    const heightDiff = winnerHeight - loserHeight;
+    const weightDiff = winnerWeight - loserWeight;
+
+    if (heightDiff >= 8 && weightDiff >= 8) {
+      return `${winnerName} 쪽이 키와 체중에서 모두 우세했습니다.`;
+    }
+
+    if (heightDiff >= 8) {
+      return `${winnerName} 쪽이 키 차이로 리치를 잡았습니다.`;
+    }
+
+    if (weightDiff >= 8) {
+      return `${winnerName} 쪽이 체중 차이로 밀어붙였습니다.`;
+    }
+
+    if (heightDiff <= -8 && weightDiff <= -8) {
+      return `${loserName} 쪽이 피지컬은 우세했지만, 결과를 뒤집지는 못했습니다.`;
+    }
+
+    if (Math.abs(heightDiff) < 5 && Math.abs(weightDiff) < 5) {
+      return `피지컬 차이가 크지 않아 근소한 승부였습니다.`;
+    }
+
+    return `키와 체중 차이가 일부 반영되었습니다.`;
+  }
+
+  function judgeBattle() {
+    const nameA = getValue("nameA", "이름1");
+    const nameB = getValue("nameB", "이름2");
+
+    const heightA = getNumber("heightA");
+    const heightB = getNumber("heightB");
+
+    const weightA = getNumber("weightA");
+    const weightB = getNumber("weightB");
+
+    const elementA = document.getElementById("elementA").value;
+    const elementB = document.getElementById("elementB").value;
+
+    let scoreA = 50;
+    let scoreB = 50;
+
+    scoreA += heightA * 0.18;
+    scoreB += heightB * 0.18;
+
+    scoreA += weightA * 0.22;
+    scoreB += weightB * 0.22;
+
+    scoreA += getElementBonus(elementA, elementB);
+    scoreB += getElementBonus(elementB, elementA);
+
+    scoreA += Math.random() * 25;
+    scoreB += Math.random() * 25;
+
+    let winnerName;
+    let loserName;
+    let winnerElement;
+    let loserElement;
+    let winnerHeight;
+    let loserHeight;
+    let winnerWeight;
+    let loserWeight;
+
+    if (scoreA > scoreB) {
+      winnerName = nameA;
+      loserName = nameB;
+      winnerElement = elementA;
+      loserElement = elementB;
+      winnerHeight = heightA;
+      loserHeight = heightB;
+      winnerWeight = weightA;
+      loserWeight = weightB;
+    } else if (scoreB > scoreA) {
+      winnerName = nameB;
+      loserName = nameA;
+      winnerElement = elementB;
+      loserElement = elementA;
+      winnerHeight = heightB;
+      loserHeight = heightA;
+      winnerWeight = weightB;
+      loserWeight = weightA;
+    } else {
+      const randomPick = Math.random() > 0.5;
+
+      winnerName = randomPick ? nameA : nameB;
+      loserName = randomPick ? nameB : nameA;
+      winnerElement = randomPick ? elementA : elementB;
+      loserElement = randomPick ? elementB : elementA;
+      winnerHeight = randomPick ? heightA : heightB;
+      loserHeight = randomPick ? heightB : heightA;
+      winnerWeight = randomPick ? weightA : weightB;
+      loserWeight = randomPick ? weightB : weightA;
+    }
+
+    const particle = getSubjectParticle(winnerName);
+    const resultText = `${elementEmoji[winnerElement]} ${winnerName}${particle} 승리했다!`;
+
+    const reasonText =
+      `${getElementReason(winnerElement, loserElement)} ${getPhysicalReason(winnerName, loserName, winnerHeight, loserHeight, winnerWeight, loserWeight)}`;
+
+    document.getElementById("result").textContent = resultText;
+    document.getElementById("reason").textContent = reasonText;
+  }
+</script>
+
+</body>
+</html>
